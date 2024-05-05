@@ -1,15 +1,14 @@
-// pages/homepage.ts
-import { Page } from "@playwright/test";
-import { Header } from "../components/header";
-import {HeroSection} from "../components/hero-section";
+import { type Page } from "@playwright/test";
+import {HeroSection} from "./hero-section";
+import { NavBar } from "./navbar";
 
 
 export class HomePage {
-  readonly header: Header;
+  readonly header: NavBar;
   readonly heroSection: HeroSection;
 
   constructor(page: Page) {
-    this.header = new Header(page);
+    this.header = new NavBar(page);
     this.heroSection = new HeroSection(page);
   }
 
