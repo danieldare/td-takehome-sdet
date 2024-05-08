@@ -6,7 +6,10 @@ test.describe("Time Doctor Homepage", () => {
     const homePage = new HomePage(page);
     await homePage.navigate("https://www.timedoctor.com/");
 
-    await homePage.header.assertHeaderElementsVisibility();
-    await homePage.heroSection.assertHeroSectionElementsVisibility();
+    await homePage.navbar.assertElementsVisibility();
+    await homePage.heroSection.assertElementsVisibility();
+    await homePage.ourSolution.assertElementsVisibility();
+    await homePage.tryTimeDoctor.assertElementsVisibility();
+    await homePage.footer.assertElementsVisibility();
   });
 });

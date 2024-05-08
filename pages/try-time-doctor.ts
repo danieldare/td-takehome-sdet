@@ -7,7 +7,7 @@ export class TryTimeDoctor {
     this.page = page;
   }
 
-  async assertTryTimeDoctorSectionElements() {
+  async assertElementsVisibility() {
     await expect(
       this.page.getByRole("heading", { name: "Try Time Doctor for free" }),
     ).toBeVisible();

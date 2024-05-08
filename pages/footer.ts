@@ -1,99 +1,154 @@
-import { type Page, expect } from "@playwright/test";
+import { Page, expect } from "@playwright/test";
 
 export class Footer {
-  readonly page: Page;
+  private readonly page: Page;
 
   constructor(page: Page) {
     this.page = page;
   }
 
-  async assertGeneralColumnElements() {
-    await expect(this.page.getByRole("heading", { name: "General" })).toBeVisible();
-    await expect(this.page.getByRole("link", { name: "Pricing" })).toBeVisible();
-    await expect(this.page.getByRole("link", { name: "Customer Reviews" })).toBeVisible();
-    await expect(this.page.getByRole("link", { name: "Request a Demo" })).toBeVisible();
-    await expect(this.page.getByRole("link", { name: "Blog" })).toBeVisible();
-    await expect(this.page.getByRole("link", { name: "Resources" })).toBeVisible();
-    await expect(this.page.getByRole("link", { name: "Benchmarking Tool" })).toBeVisible();
+  private async assertLinkVisibility(name: string, columnName: string, exact = false) {
+    try {
+      await expect(this.page.getByRole("link", { name, exact })).toBeVisible();
+    } catch (error) {
+      throw new Error(
+        `Failed to find visible element: with name '${name}' in column '${columnName}'`,
+      );
+    }
   }
 
-  async assertFeaturesColumnElements() {
-    await expect(this.page.getByRole("heading", { name: "Features" })).toBeVisible();
-    await expect(this.page.getByRole("link", { name: "All Features" })).toBeVisible();
-    await expect(this.page.getByRole("link", { name: "Time Tracking" })).toBeVisible();
-    await expect(this.page.getByRole("link", { name: "Payroll" })).toBeVisible();
-    await expect(this.page.getByRole("link", { name: "Timesheets" })).toBeVisible();
-    await expect(this.page.getByRole("link", { name: "Time Management" })).toBeVisible();
-    await expect(this.page.getByRole("link", { name: "Screen Monitoring" })).toBeVisible();
-    await expect(this.page.getByRole("link", { name: "Employee Productivity" })).toBeVisible();
-    await expect(this.page.getByRole("link", { name: "Attendance" })).toBeVisible();
+  private async assertHeadingVisibility(name: string) {
+    try {
+      await expect(
+        this.page
+          .getByTestId(`footer-accordion-header-${name.toLowerCase()}`)
+          .getByRole("heading", { name }),
+      ).toBeVisible();
+    } catch (error) {
+      throw new Error(`Visibility check failed for heading '${name}'`);
+    }
   }
 
-  async assertContactColumnElements() {
-    await expect(this.page.getByRole("heading", { name: "Contact" })).toBeVisible();
-    await expect(this.page.getByRole("link", { name: "Help Center" })).toBeVisible();
-    await expect(this.page.getByRole("link", { name: "Partner Programs" })).toBeVisible();
-    await expect(this.page.getByRole("link", { name: "Contact Us" })).toBeVisible();
-    await expect(this.page.getByRole("link", { name: "Uptime Status" })).toBeVisible();
-    await expect(this.page.getByRole("link", { name: "About Us" })).toBeVisible();
-    await expect(this.page.getByRole("link", { name: "Jobs" })).toBeVisible();
+  private async assertColumnVisible(
+    columnName: string,
+    links: Array<{ name: string; exact?: boolean }>,
+  ) {
+    await this.assertHeadingVisibility(columnName);
+    for (const link of links) {
+      await this.assertLinkVisibility(link.name, columnName, link.exact);
+    }
   }
 
-  async assertByIndustryColumnElements() {
-    await expect(this.page.getByRole("heading", { name: "By Industry" })).toBeVisible();
-    await expect(this.page.getByRole("link", { name: "CX & Contact Centers" })).toBeVisible();
-    await expect(this.page.getByRole("link", { name: "BPO & KPO" })).toBeVisible();
-    await expect(this.page.getByRole("link", { name: "Staff Leasing" })).toBeVisible();
-    await expect(this.page.getByRole("link", { name: "Technology Providers" })).toBeVisible();
-    await expect(this.page.getByRole("link", { name: "Agencies" })).toBeVisible();
+  private async assertGeneralColumn() {
+    await this.assertColumnVisible("General", [
+      { name: "Pricing" },
+      { name: "Customer Reviews" },
+      { name: "Blog" },
+      { name: "Resources" },
+      { name: "Benchmarking Tool" },
+    ]);
+    await expect(this.page.getByTestId("request-demo")).toBeVisible();
   }
 
-  async assertByUseCaseColumnElements() {
-    await expect(this.page.getByRole("heading", { name: "By Use Case" })).toBeVisible();
-    await expect(this.page.getByRole("link", { name: "Accountability" })).toBeVisible();
-    await expect(this.page.getByRole("link", { name: "Productivity", exact: true })).toBeVisible();
-    await expect(this.page.getByRole("link", { name: "Profitability" })).toBeVisible();
-    await expect(this.page.getByRole("link", { name: "Empowering Employees" })).toBeVisible();
+  private async assertFeaturesColumn() {
+    await this.assertColumnVisible("Features", [
+      { name: "All Features" },
+      { name: "Time Tracking" },
+      { name: "Payroll" },
+      { name: "Timesheets" },
+      { name: "Time Management" },
+      { name: "Screen Monitoring" },
+      { name: "Employee Productivity" },
+      { name: "Attendance" },
+    ]);
   }
 
-  async assertByWorkForceTypeColumnElements() {
-    await expect(this.page.getByRole("heading", { name: "By Workforce Type" })).toBeVisible();
-    await expect(this.page.getByRole("link", { name: "Fully Remote Teams" })).toBeVisible();
-    await expect(this.page.getByRole("link", { name: "Hybrid Workforce" })).toBeVisible();
-    await expect(this.page.getByRole("link", { name: "In-Office" })).toBeVisible();
-    await expect(this.page.getByRole("link", { name: "Enterprise" })).toBeVisible();
-    await expect(this.page.getByRole("link", { name: "SME & SMB" })).toBeVisible();
+  private async assertContactColumn() {
+    await this.assertColumnVisible("Contact", [
+      { name: "Help Center" },
+      { name: "Partner Programs" },
+      { name: "Contact Us" },
+      { name: "Uptime Status" },
+      { name: "About Us" },
+      { name: "Jobs" },
+    ]);
   }
 
-  async assertByIngrationsRowElements() {
-    await expect(this.page.getByRole("heading", { name: "Integrations" })).toBeVisible();
-    await expect(this.page.getByRole("link", { name: "JIRA" })).toBeVisible();
-    await expect(this.page.getByRole("link", { name: "Asana" })).toBeVisible();
-    await expect(this.page.getByRole("link", { name: "Trello" })).toBeVisible();
-    await expect(this.page.getByRole("link", { name: "G Suite" })).toBeVisible();
-    await expect(this.page.getByRole("link", { name: "Monday" })).toBeVisible();
-    await expect(this.page.getByRole("link", { name: "Intercom" })).toBeVisible();
-    await expect(this.page.getByRole("link", { name: "Office 365" })).toBeVisible();
-    await expect(this.page.getByRole("link", { name: "Salesforce" })).toBeVisible();
-    await expect(this.page.getByRole("link", { name: "Slack" })).toBeVisible();
-    await expect(this.page.getByRole("link", { name: "Todoist" })).toBeVisible();
-    await expect(this.page.getByRole("link", { name: "API" })).toBeVisible();
-    await expect(this.page.getByRole("link", { name: "See All 60+ Integrations" })).toBeVisible();
+  private async assertByIndustryColumn() {
+    await this.assertColumnVisible("By Industry", [
+      { name: "CX & Contact Centers" },
+      { name: "BPO & KPO" },
+      { name: "Staff Leasing" },
+      { name: "Technology Providers" },
+      { name: "Agencies" },
+    ]);
   }
 
-  async assertSecurityDetails() {
-    await expect(this.page.getByRole("link", { name: "Security & Compliance" })).toBeVisible();
-    await expect(this.page.getByRole("link", { name: "GDPR" })).toBeVisible();
-    await expect(this.page.getByRole("link", { name: "ISO 27001:" })).toBeVisible();
-    await expect(this.page.getByRole("link", { name: "SLA", exact: true })).toBeVisible();
+  private async assertByUseCaseColumn() {
+    await this.assertColumnVisible("By Use Case", [
+      { name: "Accountability" },
+      { name: "Productivity", exact: true },
+      { name: "Profitability" },
+      { name: "Empowering Employees" },
+    ]);
   }
 
-  async assertOtherLinks() {
-    await expect(this.page.getByRole("link", { name: "Privacy Policy" })).toBeVisible();
-    await expect(this.page.getByRole("link", { name: "Terms of Service" })).toBeVisible();
-    await expect(this.page.getByLabel("facebook link")).toBeVisible();
-    await expect(this.page.getByLabel("twitter link")).toBeVisible();
-    await expect(this.page.getByLabel("linkedin link")).toBeVisible();
-    await expect(this.page.getByLabel("instagram link")).toBeVisible();
+  private async assertByWorkforceTypeColumn() {
+    await this.assertColumnVisible("By Workforce Type", [
+      { name: "Fully Remote Teams" },
+      { name: "Hybrid Workforce" },
+      { name: "In-Office" },
+      { name: "Enterprise" },
+      { name: "SME & SMB" },
+    ]);
+  }
+
+  private async assertIntegrationsRow() {
+    await this.assertColumnVisible("Integrations", [
+      { name: "JIRA" },
+      { name: "Asana" },
+      { name: "Trello" },
+      { name: "G Suite" },
+      { name: "Monday" },
+      { name: "Intercom" },
+      { name: "Office 365" },
+      { name: "Salesforce" },
+      { name: "Slack" },
+      { name: "Todoist" },
+      { name: "API" },
+      { name: "See All 60+ Integrations" },
+    ]);
+  }
+
+  private async assertSecurityDetails() {
+    await this.assertLinkVisibility("Security & Compliance", "Security Details");
+    await this.assertLinkVisibility("GDPR", "Security Details");
+    await this.assertLinkVisibility("ISO 27001:", "Security Details");
+    await this.assertLinkVisibility("SLA", "Security Details", true);
+  }
+
+  private async assertSocialMediaLinks() {
+    await this.assertLinkVisibility("facebook link", "Social Media");
+    await this.assertLinkVisibility("twitter link", "Social Media");
+    await this.assertLinkVisibility("linkedin link", "Social Media");
+    await this.assertLinkVisibility("instagram link", "Social Media");
+  }
+
+  public async assertElementsVisibility() {
+    try {
+      await Promise.all([
+        this.assertGeneralColumn(),
+        this.assertFeaturesColumn(),
+        this.assertContactColumn(),
+        this.assertByIndustryColumn(),
+        this.assertByUseCaseColumn(),
+        this.assertByWorkforceTypeColumn(),
+        this.assertIntegrationsRow(),
+        this.assertSecurityDetails(),
+        this.assertSocialMediaLinks(),
+      ]);
+    } catch (error) {
+      throw error;
+    }
   }
 }
